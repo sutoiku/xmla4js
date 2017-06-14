@@ -1599,14 +1599,10 @@ Xmla.prototype = {
 *   @return {DOMDocument}
 */
     getResponseXML: function(){
-        if (this.options.forceResponseXMLEmulation !== true) {
+        if (_isObj(this.responseXML) && this.responseText === this._responseTextForResponseXML) {
           return this.responseXML;
         }
-        else
-        if (this.responseText === this._responseTextForResponseXML && this.responseXML) {
-          return this.responseXML;
-        }
-        
+
         this.responseXML = _xjs(this.responseText);
         this._responseTextForResponseXML = this.responseText;
         return this.responseXML;
@@ -2094,7 +2090,7 @@ Xmla.prototype = {
         if (options.password) {
           ajaxOptions.password = options.password;
         }
-        
+
         var headers = {};
         if (this.options.headers) {
           headers = _applyProps(headers, this.options.headers);
@@ -2183,7 +2179,7 @@ Xmla.prototype = {
             if (!responseXml) {
               request.exception = new Xmla.Exception(
                   Xmla.Exception.TYPE_ERROR,
-                  Xmla.Exception.ERROR_PARSING_RESPONSE_CDE, 
+                  Xmla.Exception.ERROR_PARSING_RESPONSE_CDE,
                   "Response is not an XML document."
               );
             }
@@ -7104,7 +7100,7 @@ Xmla.Dataset.Axis.prototype = {
                     type = memberProperty.type;
                   }
                   else {
-                    switch (nodeName) {                      
+                    switch (nodeName) {
                       case Xmla.Dataset.Axis.MEMBER_LEVEL_NUMBER:
                       case Xmla.Dataset.Axis.MEMBER_DISPLAY_INFO:
                         type = "xsd:int";
@@ -7122,7 +7118,7 @@ Xmla.Dataset.Axis.prototype = {
                   case Xmla.Dataset.Axis.MEMBER_LEVEL_NAME:
                   case Xmla.Dataset.Axis.MEMBER_LEVEL_NUMBER:
                   case Xmla.Dataset.Axis.MEMBER_DISPLAY_INFO:
-                    //map default properties with their tagName (Standard) 
+                    //map default properties with their tagName (Standard)
                     propertyName = propertyTagName;
                     break;
                   default:
