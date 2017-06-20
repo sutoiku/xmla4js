@@ -2210,7 +2210,7 @@ Xmla.prototype = {
                                 response = resultset = new Xmla.Rowset(responseXml, null, this);
                                 break;
                             case Xmla.PROP_FORMAT_MULTIDIMENSIONAL:
-                                response = dataset = new Xmla.Dataset(responseXml);
+                                response = dataset = new Xmla.Dataset(responseXml, null, this);
                                 break;
                         }
                         request.resultset = resultset;
@@ -6476,10 +6476,12 @@ while (rowObject = rowset.fetchAsObject()){
 *   @constructor
 *   @param {DOMDocument} doc The responseXML result returned by server in response to a <code>Execute</code> request.
 */
-Xmla.Dataset = function(doc){
+Xmla.Dataset = function(doc, requestType, xmla) {
     if (typeof(doc) === "string") {
       doc = _xjs(doc);
     }
+    this._type = requestType;
+    this._xmla = xmla;
     this._initDataset(doc);
     return this;
 }
