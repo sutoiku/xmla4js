@@ -269,13 +269,13 @@ function _decodeXmlaTagName(tagName) {
 //this is here to support (partial) dom interface on top of our own document implementation
 //we don't need this in the browser, it's here when running in environments without a native xhr
 //where the xhr object does not offer a DOM responseXML object.
-function _getElements(parent, list, criteria){
+function _getElements(parent, tagName, list, criteria){
     var childNodes = parent.childNodes;
     if (!childNodes) return list;
     for (var node, i = 0, n = childNodes.length; i < n; i++){
         node = childNodes[i];
-        if (criteria && criteria.call(null, node) === true) list.push(node);
-        _getElements(node, list, criteria);
+        if (criteria && criteria.call(null, node, tagName) === true) list.push(node);
+        _getElements(node, tagName, list, criteria);
     }
 };
 
@@ -287,7 +287,7 @@ var _getElementsByTagName = function(node, tagName){
         };
     }
     else {
-        var checkCriteria = function(node){
+        var checkCriteria = function(node, tagName) {
           if (node.nodeType !== 1) {
             return false;
           }
@@ -295,7 +295,7 @@ var _getElementsByTagName = function(node, tagName){
           if (nodePrefix) {
             nodePrefix += ":";
           }
-          var nodeName = nodePrefix + tagName;
+          var nodeName = nodePrefix + node.nodeName;
           return nodeName === tagName;
         };
         func = function(node, tagName){
@@ -308,7 +308,7 @@ var _getElementsByTagName = function(node, tagName){
           }
 
           var list = [];
-          _getElements(node, list, criteria);
+          _getElements(node, tagName, list, criteria);
 
           return list;
         };
@@ -333,16 +333,16 @@ var _getElementsByTagNameNS = function(node, ns, prefix, tagName){
         func = function(node, ns, prefix, tagName){
             var list = [], criteria;
             if (tagName === "*") {
-                criteria = function(_node){
+                criteria = function(_node, tagName){
                     return (_node.nodeType === 1 && _node.namespaceURI === ns);
                 };
             }
             else {
-                criteria = function(_node){
+                criteria = function(_node, tagName){
                     return (_node.nodeType === 1 && _node.namespaceURI === ns && _node.nodeName === tagName);
                 };
             }
-            _getElements(node, list, criteria);
+            _getElements(node, tagName, list, criteria);
             return list;
         };
     }
