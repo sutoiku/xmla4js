@@ -58,6 +58,8 @@ var Xmla,
     _xmlnsDataset = _xmlnsXmla + ":mddataset"
 ;
 
+var MAX_STRING_LENGTH = Math.pow(2, 28) - 16;
+
 var _createXhr;
 if (window.XMLHttpRequest) _createXhr = function(){
     return new window.XMLHttpRequest();
@@ -130,6 +132,11 @@ if (typeof(require)==="function") _createXhr = function(){
                 response.setEncoding("utf8");
                 me.changeStatus(-1, 2);
                 response.on("data", function(chunk){
+                    if (me.responseText.length + chunk.length >= MAX_STRING_LENGTH) {
+                        me.changeStatus(response.statusCode, 4);
+                        me.responseText = new Error("Payload is too big to be consumed");
+                        return;
+                    }
                     me.responseText += chunk;
                     me.changeStatus(response.statusCode, 3);
                 });
